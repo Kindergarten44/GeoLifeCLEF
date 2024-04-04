@@ -85,6 +85,9 @@ class MetaPatchProvider(PatchProvider):
     
     def __getitem__(self, item):
         patch = np.concatenate([provider[item] for provider in self.providers])
+	if not patches:
+	    print("error!!!")
+            return None
         if self.transform:
             patch = self.transform(patch)
         return patch
@@ -257,77 +260,8 @@ class JpegPatchProvider(PatchProvider):
         self.nb_layers = len(self.channels)
         self.bands_names = self.channels
 
-	def __getitem__(self, item):
-		try:
-			id_ = str(int(item['patchID']))
-		except KeyError as e:
-			raise KeyError('The patchID key does not exist.')
-		except Exception as e:
-			raise Exception('An error occurred when trying to load a patch with patchID.'
-						'Check that the input argument is a dict containing the "patchID" key.')
-
-		# folders that contain patches
-		sub_folder_1 = id_[-2:]
-		sub_folder_2 = id_[-4:-2]
-		list_tensor = {'order': [], 'tensors': []}
-
-		for channel in self.channels:
-			if channel not in list_tensor['order']:
-				path = os.path.join(self.root_path, self.channel_folder[channel], sub_folder_1, sub_folder_2, id_ + self.ext)
-				try:
-					img = np.asarray(Image.open(path))
-					if set(['red', 'green', 'blue']).issubset(self.channels) and channel in ['red', 'green', 'blue']:
-						img = img.transpose((2, 0, 1))
-						list_tensor['order'].extend(['red', 'green', 'blue'])
-					else:
-						if channel in ['red', 'green', 'blue']:
-							img = img[:, :, 'rgb'.find(channel[0])]
-						img = np.expand_dims(img, axis=0)
-						list_tensor['order'].append(channel)
-				except Exception as e:
-					logging.critical('Could not open {} properly. Setting array to 0.'.format(path))
-					img = np.zeros((1, self.patch_size, self.patch_size))
-					list_tensor['order'].append(channel)
-				if self.normalize:
-					if os.path.isfile(self.dataset_stats):
-						df = pd.read_csv(self.dataset_stats, sep=';')
-						mean, std = df.loc[0, 'mean'], df.loc[0, 'std']
-					else:
-						mean, std = jpeg_standardize(self.root_path, [self.ext], output=self.dataset_stats)
-					img = (img - mean) / std
-				for depth in img:
-					list_tensor['tensors'].append(np.expand_dims(depth, axis=0))
-		# Check if all channels are present, if not, fill missing channels with zeros
-		expected_channels = set(self.channels)
-		actual_channels = set(list_tensor['order'])
-		missing_channels = expected_channels - actual_channels
-		if missing_channels:
-			logging.warning(f"Missing channels: {missing_channels}. Filling with zeros.")
-			for channel in missing_channels:
-				img = np.zeros((1, self.patch_size, self.patch_size))
-				list_tensor['tensors'].append(img)
-				list_tensor['order'].append(channel)
-
-		tensor = np.concatenate(list_tensor['tensors'])
-		if self.patch_transform:
-			for transform in self.patch_transform:
-				tensor = transform(tensor)
-		self.channels = list_tensor['order']
-		self.n_rows = img.shape[1]
-		self.n_cols = img.shape[2]
-		return tensor
-    def __str__(self):
-        result = '-' * 50 + '\n'
-        result += 'n_layers: ' + str(self.nb_layers) + '\n'
-        result += 'n_rows: ' + str(self.n_rows) + '\n'
-        result += 'n_cols: ' + str(self.n_cols) + '\n'
-        result += '-' * 50
-        return result
-
-
-"""
     def __getitem__(self, item):
-        Return a tensor composed of every channels of a jpeg patch.
+        """Return a tensor composed of every channels of a jpeg patch.
 
         Args:
             item (dict): dictionnary containing the patchID necessary to 
@@ -338,8 +272,8 @@ class JpegPatchProvider(PatchProvider):
             Exception: item is not a dictionnary as expected
 
         Returns:
-            #(tensor): multi-channel patch tensor.
-        
+            (tensor): multi-channel patch tensor.
+        """
         try:
             id_ = str(int(item['patchID']))
         except KeyError as e:
@@ -395,4 +329,3 @@ class JpegPatchProvider(PatchProvider):
         result += 'n_cols: ' + str(self.n_cols) + '\n'
         result += '-' * 50
         return result
-"""
