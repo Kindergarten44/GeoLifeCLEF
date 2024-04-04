@@ -313,7 +313,15 @@ class JpegPatchProvider(PatchProvider):
                     img = (img-mean)/std
                 for depth in img:
                     list_tensor['tensors'].append(np.expand_dims(depth, axis=0))
-        tensor = np.concatenate(list_tensor['tensors'])
+        #tensor = np.concatenate(list_tensor['tensors'])
+
+        #test
+        if list_tensor['tensors']:
+                tensor = np.concatenate(list_tensor['tensors'])
+        else:
+                print("tesnsor err")
+                tensor = np.array([])
+                 
         if self.patch_transform:
             for transform in self.patch_transform:
                 tensor = transform(tensor)
