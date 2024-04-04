@@ -309,11 +309,9 @@ class JpegPatchProvider(PatchProvider):
                         df = pd.read_csv(self.dataset_stats, sep=';')
                         mean, std = df.loc[0, 'mean'], df.loc[0, 'std']
                     else:
-                        #test
-                        logging.debug("mean: %s", mean)
-                        logging.debug("std: %s", std)
-                        logging.debug("path: %s", path)
-                        mean, std = jpeg_standardize(self.root_path, [self.ext], output=self.dataset_stats)
+                        logging.debug("mean and std are not available because dataset_stats file is missing.")
+                        return None
+                        #mean, std = jpeg_standardize(self.root_path, [self.ext], output=self.dataset_stats)
                     img = (img-mean)/std
                 for depth in img:
                     list_tensor['tensors'].append(np.expand_dims(depth, axis=0))
