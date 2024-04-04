@@ -89,7 +89,7 @@ class MetaPatchProvider(PatchProvider):
 		print("error!!!")
 		return None
         if self.transform:
-        	patch = self.transform(patch)
+		patch = self.transform(patch)
         	return patch
     
     def __str__(self):
