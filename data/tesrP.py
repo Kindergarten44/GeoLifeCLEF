@@ -316,6 +316,13 @@ def __getitem__(self, item):
 	self.n_rows = img.shape[1]
 	self.n_cols = img.shape[2]
 	return tensor
+    def __str__(self):
+        result = '-' * 50 + '\n'
+        result += 'n_layers: ' + str(self.nb_layers) + '\n'
+        result += 'n_rows: ' + str(self.n_rows) + '\n'
+        result += 'n_cols: ' + str(self.n_cols) + '\n'
+        result += '-' * 50
+        return result
 
 """
     def __getitem__(self, item):
@@ -379,7 +386,7 @@ def __getitem__(self, item):
         self.n_rows = img.shape[1]
         self.n_cols = img.shape[2]
         return tensor
-"""
+
     def __str__(self):
         result = '-' * 50 + '\n'
         result += 'n_layers: ' + str(self.nb_layers) + '\n'
@@ -387,3 +394,4 @@ def __getitem__(self, item):
         result += 'n_cols: ' + str(self.n_cols) + '\n'
         result += '-' * 50
         return result
+"""
