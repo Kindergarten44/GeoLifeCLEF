@@ -309,6 +309,10 @@ class JpegPatchProvider(PatchProvider):
                         df = pd.read_csv(self.dataset_stats, sep=';')
                         mean, std = df.loc[0, 'mean'], df.loc[0, 'std']
                     else:
+                        #test
+                        logging.debug("mean: %s", mean)
+                        logging.debug("std: %s", std)
+                        logging.debug("path: %s", path)
                         mean, std = jpeg_standardize(self.root_path, [self.ext], output=self.dataset_stats)
                     img = (img-mean)/std
                 for depth in img:
