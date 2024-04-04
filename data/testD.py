@@ -39,22 +39,22 @@ class PatchesDataset(Dataset):
 
     def __len__(self):
         return len(self.observation_ids)
-  #test
-  def __getitem__(self, index):
-    item = self.items.iloc[index].to_dict()
+   #test
+    def __getitem__(self, index):
+        item = self.items.iloc[index].to_dict()
 
-    if self.provider is None:
+        if self.provider is None:
         # Handle the case where provider is None
-        return None, None
-    else:
-        patch = self.provider[item]
+            return None, None
+        else:
+            patch = self.provider[item]
 
-        target = self.targets[index]
+            target = self.targets[index]
 
-        if self.target_transform:
-            target = self.target_transform(target)
+            if self.target_transform:
+                target = self.target_transform(target)
 
-        return torch.from_numpy(patch).float(), target
+            return torch.from_numpy(patch).float(), target
 
    #test
     #def __getitem__(self, index):
