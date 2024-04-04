@@ -324,6 +324,7 @@ def __getitem__(self, item):
         result += '-' * 50
         return result
 
+
 """
     def __getitem__(self, item):
         Return a tensor composed of every channels of a jpeg patch.
